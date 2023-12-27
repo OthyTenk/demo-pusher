@@ -3,9 +3,9 @@ import { getServerSession } from "next-auth";
 import { Inter } from "next/font/google";
 import Image from "next/image";
 import { authOptions } from "../../libs/authOptions";
-import Login from "./components/Login";
-import Logout from "./components/Logout";
-import NextAuthProvider from "./components/NextAuthProvider";
+import Login from "../components/Login";
+import Logout from "../components/Logout";
+import NextAuthProvider from "../components/NextAuthProvider";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
