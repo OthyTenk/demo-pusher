@@ -1,11 +1,11 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "../../../libs/authOptions";
-import Chat from "../components/Chat";
-import Form from "../components/Form";
+import Chat from "../../components/Chat";
+import Form from "../../components/Form";
 
 import { getMessages } from "../actions/getMessages";
-import { IMessageProps } from "../components/MessageBubble";
+import { IMessageProps } from "../../components/MessageBubble";
 
 // Add
 export const dynamic = "force-dynamic";

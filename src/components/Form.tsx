@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import postMessage from "../actions/postMessage";
+import postMessage from "../app/actions/postMessage";
 
 const Form = () => {
   const formRef = useRef<HTMLFormElement>(null);
