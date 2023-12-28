@@ -12,8 +12,14 @@ interface GameModeProps {
 }
 
 const GameMode: FC<GameModeProps> = ({ userName }) => {
-  const { setUserInfo, currentUserId, currentUser, setGameCode, gameCode } =
-    useGlobal();
+  const {
+    setUserInfo,
+    currentUserId,
+    currentUser,
+    setGameCode,
+    gameCode,
+    reset,
+  } = useGlobal();
 
   useEffect(() => {
     if (currentUser && currentUser?.length > 0 && currentUserId.length > 0)
@@ -32,17 +38,15 @@ const GameMode: FC<GameModeProps> = ({ userName }) => {
     });
 
     channel.bind("opponent-disconnected", (data: { gameCode: string }) => {
-      console.log(`opponent-disconnected: ${data.gameCode}`);
       if (gameCode === data.gameCode) {
-        setGameCode("");
+        reset();
       }
     });
 
     return () => pusher.unsubscribe("game");
-  }, [gameCode, setGameCode]);
+  }, [gameCode, setGameCode, reset]);
 
   const onLeaveGame = async () => {
-    console.log("onLeaveGame");
     await axios.post("/api/leave-game", {
       userId: currentUserId,
       gameCode: gameCode,

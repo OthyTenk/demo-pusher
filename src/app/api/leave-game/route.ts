@@ -6,15 +6,19 @@ export const POST = async (request: Request) => {
   const { userId } = body;
 
   if (!userId) {
-    return;
+    console.log("!userId");
+    return NextResponse.error();
   }
 
-  console.log(gamePlayers);
+  if (!gamePlayers.hasOwnProperty(userId)) {
+    console.log("!hasOwnProperty");
+    return NextResponse.error();
+  }
 
   const gameCode = gamePlayers[userId];
 
   if (!gameCode) {
-    console.log(gameCode);
+    console.log("!gameCode");
     return NextResponse.error();
   }
 
@@ -34,8 +38,6 @@ export const POST = async (request: Request) => {
     // gameCode: `${JSON.stringify(inputCode)}\n\n`,
     gameCode: gameCode,
   });
-
-  console.log(`opponent-disconnected ${gameCode}`);
 
   return NextResponse.json("ok");
 };

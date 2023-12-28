@@ -32,11 +32,11 @@ const names = [
 const page = () => {
   const randomPrefix = Math.floor(Math.random() * prefix.length);
   const randomName = Math.floor(Math.random() * names.length);
-  const currentUser = `${prefix[randomPrefix]} ${names[randomName]}`;
+  const generateCurrentUser = `${prefix[randomPrefix]} ${names[randomName]}`;
 
   return (
     <div className="mt-32">
-      <GameMode userName={currentUser} />
+      <GameMode userName={generateCurrentUser} />
     </div>
   );
 };

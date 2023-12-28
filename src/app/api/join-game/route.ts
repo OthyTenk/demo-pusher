@@ -10,11 +10,7 @@ export const POST = async (request: Request) => {
   }
   const Pusher = require("pusher");
 
-  console.log(gamePlayers);
-
   gamePlayers[userId] = inputCode;
-
-  console.log(gamePlayers);
 
   const pusher = new Pusher({
     appId: process.env.PUSHER_APP_ID,
@@ -44,7 +40,6 @@ export const POST = async (request: Request) => {
       clearInterval(interval);
     }
   }, 1000);
-
   //   io.sockets.to(gameCode).emit("game-state", gameState[gameCode]);
 
   return NextResponse.json("ok");

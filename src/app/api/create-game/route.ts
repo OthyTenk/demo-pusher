@@ -2,8 +2,6 @@ import { randomInt } from "crypto";
 import { NextResponse } from "next/server";
 import { gamePlayers } from "@/app/serverStore";
 
-// const gameState: { [key: string]: string } = {};
-
 export const POST = async (request: Request) => {
   const body = await request.json();
   const { userId } = body;
