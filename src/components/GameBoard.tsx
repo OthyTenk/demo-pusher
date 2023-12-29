@@ -1,12 +1,15 @@
 "use client";
 
 import useGlobal from "@/app/store/useGlobal";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import pusher from "../../libs/pusher";
+import axios from "axios";
 
 const GameBoard = () => {
   const { setGameCode, gameCode } = useGlobal();
   const [counterTime, setCounterTime] = useState(0);
+  const [position, setPosition] = useState(0);
+  const [text, setText] = useState("");
 
   useEffect(() => {
     const channel = pusher.subscribe("game");
@@ -23,10 +26,59 @@ const GameBoard = () => {
       setCounterTime(counterTime);
     });
 
-    return () => pusher.unsubscribe("game");
+    channel.bind("opponent-position", (opponent: { position: number }) => {
+      if (!opponent) return;
+
+      setPosition(opponent.position);
+    });
+
+    return () => {
+      pusher.unsubscribe("game");
+      pusher.unbind("game-starts-in");
+      pusher.unbind("lets-go");
+      pusher.unbind("opponent-position");
+    };
   }, [gameCode, setGameCode]);
 
-  return <div>GameBoard {counterTime > 0 && <span>{counterTime}</span>}</div>;
+  useEffect(() => {
+    sendPosition(text.length);
+  }, [text]);
+
+  const sendPosition = async (position: number) => {
+    await axios.post("/api/position", {
+      position: position,
+    });
+  };
+
+  const onTypePosition = (e: ChangeEvent<HTMLInputElement>) => {
+    setText(e.target.value);
+  };
+
+  const onReset = () => {
+    setPosition(0);
+    setText("");
+  };
+
+  return (
+    <div>
+      {counterTime > 0 && <span>{counterTime}</span>}
+      <div className="space-y-3">
+        <div className="font-semibold">
+          opponent: {position}, my: {text.length}
+        </div>
+
+        <div className="space-x-3">
+          <input
+            type="text"
+            value={text}
+            className="outline outline-neutral-400 rounded-xl w-96"
+            onChange={onTypePosition}
+          />
+          <button onClick={onReset}>reset</button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default GameBoard;

@@ -7,8 +7,8 @@ export const POST = async (request: Request) => {
   const body = await request.json();
   const { userId } = body;
 
-  const gameCodeInit = randomInt(1000, 9999);
-  const gameCode = `${gameCodeInit}`;
+  const generateGameCode = randomInt(1000, 9999);
+  const gameCode = `${generateGameCode}`;
 
   await prisma.gamePlayer.create({
     data: {
