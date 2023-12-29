@@ -1,3 +1,4 @@
+import ClientOnly from "@/components/ClientOnly";
 import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { Inter } from "next/font/google";
@@ -7,7 +8,6 @@ import Login from "../components/Login";
 import Logout from "../components/Logout";
 import NextAuthProvider from "../components/NextAuthProvider";
 import "./globals.css";
-import ClientOnly from "@/components/ClientOnly";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,11 +26,10 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ClientOnly>
-          <NextAuthProvider>
-            <nav className="flex px-6 py-5 justify-between fixed top-0 left-0 w-full bg-white">
-              <h1 className="text-black text-3xl font-bold">Demo Pusher</h1>
-
+        <NextAuthProvider>
+          <nav className="flex px-6 py-5 justify-between fixed top-0 left-0 w-full bg-white">
+            <h1 className="text-black text-3xl font-bold">Demo Pusher</h1>
+            <ClientOnly>
               {session ? (
                 <div className="flex items-center gap-4">
                   <Image
@@ -45,10 +44,10 @@ export default async function RootLayout({
               ) : (
                 <Login />
               )}
-            </nav>
-            <main>{children}</main>
-          </NextAuthProvider>
-        </ClientOnly>
+            </ClientOnly>
+          </nav>
+          <main>{children}</main>
+        </NextAuthProvider>
       </body>
     </html>
   );

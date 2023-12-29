@@ -1,11 +1,11 @@
 "use client";
 
 import useGlobal from "@/app/store/useGlobal";
+import axios from "axios";
 import { FC, useEffect } from "react";
 import pusher from "../../libs/pusher";
 import CreateGame from "./CreateGame";
 import GameBoard from "./GameBoard";
-import axios from "axios";
 
 interface GameModeProps {
   userName: string;
@@ -47,10 +47,14 @@ const GameMode: FC<GameModeProps> = ({ userName }) => {
   }, [gameCode, setGameCode, reset]);
 
   const onLeaveGame = async () => {
-    await axios.post("/api/leave-game", {
-      userId: currentUserId,
-      gameCode: gameCode,
-    });
+    await axios
+      .post("/api/leave-game", {
+        userId: currentUserId,
+        gameCode: gameCode,
+      })
+      .catch(() => {
+        reset();
+      });
   };
 
   return (

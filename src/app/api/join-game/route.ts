@@ -1,5 +1,5 @@
-import { gamePlayers } from "@/app/serverStore";
 import { NextResponse } from "next/server";
+import prisma from "../../../../libs/prismadb";
 
 export const POST = async (request: Request) => {
   const body = await request.json();
@@ -8,10 +8,15 @@ export const POST = async (request: Request) => {
   if (!inputCode || !userId) {
     return NextResponse.error();
   }
+
+  await prisma.gamePlayer.create({
+    data: {
+      gameCode: inputCode,
+      playerId: userId,
+    },
+  });
+
   const Pusher = require("pusher");
-
-  gamePlayers[userId] = inputCode;
-
   const pusher = new Pusher({
     appId: process.env.PUSHER_APP_ID,
     key: process.env.NEXT_PUBLIC_PUSHER_KEY,

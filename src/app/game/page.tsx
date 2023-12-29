@@ -1,3 +1,4 @@
+import ClientOnly from "@/components/ClientOnly";
 import GameMode from "@/components/GameMode";
 import React from "react";
 
@@ -36,7 +37,9 @@ const page = () => {
 
   return (
     <div className="mt-32">
-      <GameMode userName={generateCurrentUser} />
+      <ClientOnly>
+        <GameMode userName={generateCurrentUser} />
+      </ClientOnly>
     </div>
   );
 };
