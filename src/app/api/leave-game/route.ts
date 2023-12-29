@@ -1,5 +1,5 @@
-import { gamePlayers } from "@/app/serverStore";
 import { NextResponse } from "next/server";
+import prisma from "../../../../libs/prismadb";
 
 export const POST = async (request: Request) => {
   const body = await request.json();
@@ -10,22 +10,21 @@ export const POST = async (request: Request) => {
     return NextResponse.error();
   }
 
-  if (!gamePlayers.hasOwnProperty(userId)) {
-    console.log("!hasOwnProperty");
-    return NextResponse.error();
+  const player = await prisma.gamePlayer.findFirst({
+    select: {
+      gameCode: true,
+      id: true,
+    },
+    where: {
+      playerId: userId,
+    },
+  });
+
+  if (!player) {
+    return NextResponse.json("Not found game");
   }
-
-  const gameCode = gamePlayers[userId];
-
-  if (!gameCode) {
-    console.log("!gameCode");
-    return NextResponse.error();
-  }
-
-  delete gamePlayers[userId];
 
   const Pusher = require("pusher");
-
   const pusher = new Pusher({
     appId: process.env.PUSHER_APP_ID,
     key: process.env.NEXT_PUBLIC_PUSHER_KEY,
@@ -36,7 +35,13 @@ export const POST = async (request: Request) => {
 
   await pusher.trigger("game", "opponent-disconnected", {
     // gameCode: `${JSON.stringify(inputCode)}\n\n`,
-    gameCode: gameCode,
+    gameCode: player.gameCode,
+  });
+
+  await prisma.gamePlayer.deleteMany({
+    where: {
+      gameCode: player.gameCode,
+    },
   });
 
   return NextResponse.json("ok");

@@ -64,3 +64,11 @@ model Message {
 
   createdAt DateTime @default(now())
 }
+
+model GamePlayer {
+  id       String @id @default(uuid())
+  playerId String @default("")
+  gameCode String @default("")
+
+  createdAt DateTime @default(now())
+}
