@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../../libs/prismadb";
+import { pusherServer } from "../../../../libs/pusher";
 
 export const POST = async (request: Request) => {
   const body = await request.json();
   const { userId } = body;
 
   if (!userId) {
-    console.log("!userId");
-    return NextResponse.error();
+    return new NextResponse("Invalid User", { status: 401 });
   }
 
-  const player = await prisma.gamePlayer.findFirst({
+  const game = await prisma.gamePlayer.findFirst({
     select: {
       gameCode: true,
       id: true,
@@ -20,27 +20,18 @@ export const POST = async (request: Request) => {
     },
   });
 
-  if (!player) {
-    return NextResponse.json("Not found game");
+  if (!game) {
+    return new NextResponse("Not found game", { status: 200 });
   }
 
-  const Pusher = require("pusher");
-  const pusher = new Pusher({
-    appId: process.env.PUSHER_APP_ID,
-    key: process.env.NEXT_PUBLIC_PUSHER_KEY,
-    secret: process.env.PUSHER_SECRET,
-    cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
-    useTLS: true,
-  });
-
-  await pusher.trigger("game", "opponent-disconnected", {
+  await pusherServer.trigger("game", "opponent-disconnected", {
     // gameCode: `${JSON.stringify(inputCode)}\n\n`,
-    gameCode: player.gameCode,
+    gameCode: game.gameCode,
   });
 
   await prisma.gamePlayer.deleteMany({
     where: {
-      gameCode: player.gameCode,
+      gameCode: game.gameCode,
     },
   });
 

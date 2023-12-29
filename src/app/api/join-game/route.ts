@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../../libs/prismadb";
+import { pusherServer } from "../../../../libs/pusher";
 
 export const POST = async (request: Request) => {
   const body = await request.json();
   const { inputCode, userId } = body;
 
   if (!inputCode || !userId) {
-    return NextResponse.error();
+    return new NextResponse("Invalid User", { status: 401 });
   }
 
   await prisma.gamePlayer.create({
@@ -16,16 +17,7 @@ export const POST = async (request: Request) => {
     },
   });
 
-  const Pusher = require("pusher");
-  const pusher = new Pusher({
-    appId: process.env.PUSHER_APP_ID,
-    key: process.env.NEXT_PUBLIC_PUSHER_KEY,
-    secret: process.env.PUSHER_SECRET,
-    cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
-    useTLS: true,
-  });
-
-  await pusher.trigger("game", "has-joined-game", {
+  await pusherServer.trigger("game", "has-joined-game", {
     // gameCode: `${JSON.stringify(inputCode)}\n\n`,
     gameCode: inputCode,
   });
@@ -34,14 +26,14 @@ export const POST = async (request: Request) => {
   const counterTime = 5000;
   const startsAt = new Date().getTime() + counterTime;
 
-  await pusher.trigger("game", "game-starts-in", counterTime);
+  await pusherServer.trigger("game", "game-starts-in", counterTime);
 
   const interval = setInterval(async () => {
     const remaining = startsAt - new Date().getTime();
     if (remaining > 0) {
-      await pusher.trigger("game", "game-starts-in", remaining);
+      await pusherServer.trigger("game", "game-starts-in", remaining);
     } else {
-      await pusher.trigger("game", "lets-go", 0);
+      await pusherServer.trigger("game", "lets-go", 0);
       clearInterval(interval);
     }
   }, 1000);
